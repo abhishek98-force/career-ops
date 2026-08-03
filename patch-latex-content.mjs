@@ -7,9 +7,9 @@
  *   node patch-latex-content.mjs <source.tex> <patches.json> <output.tex>
  *
  * patches.json:
- *   { "patches": [ { "id": "bullet-0", "text": "Tailored bullet text" } ] }
+ *   { "patches": [ { "id": "bullet-0", "text": "Tailored bullet text" }, { "id": "bullet-1", "remove": true } ] }
  *
- * Optional manifest fields in patches.json (from extract-latex-content.mjs):
+ * Optional manifest fields in patches.json (validated against the source):
  *   { "slots": [...], "patches": [...] }
  */
 
@@ -17,7 +17,7 @@ import { readFile, writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { pathToFileURL } from 'url';
-import { applyPatches } from './lib/latex-content.mjs';
+import { applyPatches, buildManifest } from './lib/latex-content.mjs';
 
 async function main() {
   const args = process.argv.slice(2).filter(a => a !== '--help');
@@ -52,11 +52,19 @@ async function main() {
   }
 
   const patches = Array.isArray(payload.patches) ? payload.patches : [];
-  const slots = Array.isArray(payload.slots) ? payload.slots : [];
-
-  if (slots.length === 0) {
-    console.error('patches.json must include a slots array from extract-latex-content.mjs');
+  const manifest = buildManifest(absSource, tex);
+  if (!manifest.supported) {
+    console.error(manifest.error || 'Source template has no editable LaTeX slots');
     process.exit(1);
+  }
+  const slots = manifest.slots;
+
+  if (Array.isArray(payload.slots)) {
+    const normalized = (list) => list.map(({ id, kind, text, span }) => ({ id, kind, text, span }));
+    if (JSON.stringify(normalized(slots)) !== JSON.stringify(normalized(payload.slots))) {
+      console.error('Patch manifest is stale or belongs to a different source template; extract it again.');
+      process.exit(1);
+    }
   }
 
   const missing = patches.filter(p => !slots.some(s => s.id === p.id));
@@ -75,6 +83,8 @@ async function main() {
   const report = {
     source: absSource,
     output: absOutput,
+    family: manifest.family,
+    slots: slots.length,
     patched: patches.length,
     valid: true,
   };

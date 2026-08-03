@@ -1,0 +1,279 @@
+<!-- career-ops-template
+name: Word Classic
+description: Compact ATS-safe layout matching the user's Word resume format
+-->
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{NAME}} - Resume</title>
+<style>
+  :root {
+    --font-family: "Liberation Sans", Arial, sans-serif;
+    --font-size: 10.5pt;
+    --page-margin: 0.25in 0.5in;
+  }
+
+  @page {
+    size: Letter;
+    margin: var(--page-margin);
+  }
+
+  * {
+    box-sizing: border-box;
+    font-variant-ligatures: none;
+    font-feature-settings: "liga" 0, "clig" 0, "dlig" 0;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    color: #000;
+    background: #fff;
+    font-family: var(--font-family);
+    font-size: var(--font-size);
+    line-height: 1.08;
+  }
+
+  .page {
+    width: 100%;
+    max-width: {{PAGE_WIDTH}};
+    margin: 0 auto;
+  }
+
+  .header {
+    margin: 0 0 5pt;
+  }
+
+  .header h1 {
+    margin: 0 0 3pt;
+    text-align: center;
+    font-family: var(--font-family);
+    font-size: 14pt;
+    line-height: 1;
+    font-weight: 700;
+  }
+
+  .contact-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1pt 8pt;
+    font-size: 9.5pt;
+    line-height: 1.12;
+  }
+
+  .contact-row a,
+  .contact-row span {
+    color: #000;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .contact-row .separator {
+    color: #000;
+  }
+
+  .section {
+    margin: 0 0 4pt;
+  }
+
+  .section-title {
+    margin: 0 0 2pt;
+    font-family: var(--font-family);
+    font-size: 10.5pt;
+    line-height: 1;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-decoration-thickness: 0.7pt;
+    text-underline-offset: 1pt;
+  }
+
+  .skills-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1pt;
+  }
+
+  .skill-item,
+  .skill-category {
+    font-size: 9.5pt;
+    line-height: 1.08;
+  }
+
+  .skill-category {
+    font-weight: 700;
+  }
+
+  .job {
+    margin: 0 0 3pt;
+  }
+
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8pt;
+    margin: 0 0 1pt;
+  }
+
+  .job-company,
+  .job-period {
+    color: #000;
+    font-size: 10pt;
+    line-height: 1.05;
+    font-weight: 700;
+  }
+
+  .job-period {
+    white-space: nowrap;
+  }
+
+  .job-role {
+    margin: 0 0 1pt;
+    color: #000;
+    font-size: 9.5pt;
+    font-weight: 700;
+  }
+
+  .job-role:empty,
+  .job-location:empty {
+    display: none;
+  }
+
+  .job-location {
+    font-size: 9pt;
+  }
+
+  .job ul {
+    margin: 0;
+    padding-left: 15pt;
+  }
+
+  .job li {
+    margin: 0 0 1pt;
+    padding-left: 1pt;
+    color: #000;
+    font-size: 9.35pt;
+    line-height: 1.08;
+  }
+
+  .project {
+    margin: 0 0 2pt;
+    margin-left: 15pt;
+    padding-left: 0;
+    display: list-item;
+    list-style-position: outside;
+    list-style-type: disc;
+    font-size: 9.35pt;
+    line-height: 1.08;
+  }
+
+  .project-title,
+  .project-desc {
+    display: inline;
+    color: #000;
+    font-size: 9.35pt;
+  }
+
+  .project-title {
+    font-weight: 700;
+  }
+
+  .project-title::after {
+    content: ": ";
+  }
+
+  .project-badge,
+  .project-tech {
+    display: none;
+  }
+
+  .edu-item {
+    margin: 0 0 1pt;
+    margin-left: 15pt;
+    padding-left: 0;
+    display: list-item;
+    list-style-position: outside;
+    list-style-type: disc;
+    font-size: 9.35pt;
+  }
+
+  .edu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8pt;
+  }
+
+  .edu-title,
+  .edu-org,
+  .edu-year {
+    color: #000;
+    font-size: 9.35pt;
+    line-height: 1.08;
+    font-weight: 400;
+  }
+
+  .edu-org::before {
+    content: "";
+  }
+
+  .edu-year {
+    white-space: nowrap;
+  }
+
+  .edu-desc {
+    display: none;
+  }
+
+  .header,
+  .job-header,
+  .project,
+  .edu-item,
+  .section-title {
+    break-inside: avoid;
+  }
+
+  .section-title {
+    break-after: avoid;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  {{PHOTO}}
+  <div class="header">
+    <h1>{{NAME}}</h1>
+    <div class="contact-row">{{PHONE}} | {{EMAIL}} | {{PORTFOLIO_DISPLAY}} | {{LOCATION}}</div>
+  </div>
+
+  <!-- SKILLS -->
+  <div class="section">
+    <div class="section-title">{{SECTION_SKILLS}}</div>
+    {{SKILLS}}
+  </div>
+
+  <!-- WORK EXPERIENCE -->
+  <div class="section">
+    <div class="section-title">{{SECTION_EXPERIENCE}}</div>
+    {{EXPERIENCE}}
+  </div>
+
+  <!-- PROJECTS -->
+  <div class="section">
+    <div class="section-title">{{SECTION_PROJECTS}}</div>
+    {{PROJECTS}}
+  </div>
+
+  <!-- EDUCATION -->
+  <div class="section">
+    <div class="section-title">{{SECTION_EDUCATION}}</div>
+    {{EDUCATION}}
+  </div>
+</div>
+</body>
+</html>

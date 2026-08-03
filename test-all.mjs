@@ -654,6 +654,13 @@ try {
     const cvWdLive = await checkLivenessViaApi(wdUrl);
     globalThis.fetch = async () => ({ status: 404 });
     const cvWdGone = await checkLivenessViaApi(wdUrl);
+    const wdAliasUrl = 'https://osv-amerisure.wd5.myworkdayjobs.com/Amerisure/job/Farmington-Hills-MI/Software-Engineer-I_JR-002063';
+    const wdAliasCalls = [];
+    globalThis.fetch = async (url) => {
+      wdAliasCalls.push(url);
+      return { status: wdAliasCalls.length === 1 ? 422 : 200 };
+    };
+    const cvWdAliasLive = await checkLivenessViaApi(wdAliasUrl);
     if (cvAshbyLive?.result === 'active' && cvAshbyLive?.code === 'ashby_api_ok'
         && cvAshbyGone?.result === 'expired' && cvAshbyGone?.code === 'ashby_api_unlisted'
         && cvAshbyMalformed === null
@@ -661,7 +668,10 @@ try {
         && cvGone?.result === 'expired'
         && cvErr === null
         && cvWdLive?.result === 'active' && cvWdLive?.code === 'workday_api_ok'
-        && cvWdGone?.result === 'expired' && cvWdGone?.code === 'workday_api_gone') {
+        && cvWdGone?.result === 'expired' && cvWdGone?.code === 'workday_api_gone'
+        && cvWdAliasLive?.result === 'active' && cvWdAliasLive?.code === 'workday_api_ok'
+        && wdAliasCalls[0]?.includes('/wday/cxs/osv-amerisure/Amerisure/job/')
+        && wdAliasCalls[1]?.includes('/wday/cxs/osv_amerisure/Amerisure/job/')) {
       pass('checkLivenessViaApi: 200→interpret (Ashby), malformed→null, greenhouse/workday 200→active, 404→expired, fetch error→null');
     } else {
       fail(`checkLivenessViaApi wrong: ashbyLive=${JSON.stringify(cvAshbyLive)} ashbyGone=${JSON.stringify(cvAshbyGone)} malformed=${JSON.stringify(cvAshbyMalformed)} ghLive=${JSON.stringify(cvGhLive)} gone=${JSON.stringify(cvGone)} err=${JSON.stringify(cvErr)} wdLive=${JSON.stringify(cvWdLive)} wdGone=${JSON.stringify(cvWdGone)}`);
@@ -9924,6 +9934,12 @@ try {
     } else {
       fail('applyPatches did not insert tailored bullet text');
     }
+    const removed = applyPatches(resumeFixture, [{ id: firstBullet.id, remove: true }], manifest.slots);
+    if (!removed.includes(firstBullet.text) && !/^\s*\\resumeItem\{\s*\}\s*$/m.test(removed)) {
+      pass('applyPatches removes an unused resumeItem without leaving an empty bullet');
+    } else {
+      fail('applyPatches left content or an empty resumeItem after removal');
+    }
   } else {
     fail('resume-subheading manifest has no bullet slot to patch');
   }
@@ -9982,6 +9998,42 @@ try {
     fail('applyPatches did not rewrite the resumeItemWithoutTitle prose group');
   }
 
+  const customMacroFixture = String.raw`\documentclass{article}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\newcommand{\resumeSubheadingRight}[2]{#1 #2}
+\newcommand{\resumeItem}[1]{\item #1}
+\newcommand{\resumeSkill}[2]{\item \textbf{#1:} #2}
+\newcommand{\resumeProject}[2]{\item \textbf{#1:} #2}
+\begin{document}
+\resumeSubheadingRight{Example Engineer}{2024--Present}
+\begin{itemize}
+\resumeSkill{Languages}{Python, SQL}
+\resumeItem{Built a reliable service.}
+\resumeProject{Example Project}{Automated a manual workflow.}
+\end{itemize}
+\end{document}`;
+  const customManifest = buildManifest('custom-macros.tex', customMacroFixture);
+  const customKinds = customManifest.slots.map(s => s.kind).sort();
+  if (customManifest.supported && customKinds.join(',') === 'bullet,project,skill') {
+    pass('custom subheading, skill, and project macros expose typed editable slots');
+  } else {
+    fail(`custom LaTeX macro extraction failed: ${JSON.stringify(customManifest)}`);
+  }
+
+  const emptyWrapperFixture = String.raw`\documentclass{article}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\newcommand{\resumeSubheadingRight}[2]{#1 #2}
+\newcommand{\resumeItem}[1]{\item #1}
+\begin{document}No editable calls.\end{document}`;
+  const emptyWrapperManifest = buildManifest('empty-wrapper.tex', emptyWrapperFixture);
+  if (!emptyWrapperManifest.supported && emptyWrapperManifest.slots.length === 0) {
+    pass('macro-only false positive is rejected when no editable slots exist');
+  } else {
+    fail(`macro-only layout should not be supported: ${JSON.stringify(emptyWrapperManifest)}`);
+  }
+
   const compileOnlyTex = `\\documentclass{article}\\begin{document}Minimal user CV\\end{document}`;
   const compileOnlyValidation = validateLatexContent(compileOnlyTex, true);
   if (compileOnlyValidation.issues.length === 0) {
@@ -10014,6 +10066,15 @@ try {
     pass('extract-latex-content.mjs + patch-latex-content.mjs CLI round-trip');
   } else {
     fail('CLI patch round-trip did not update the .tex file');
+  }
+  const manifestlessPatchJson = join(extractDir, 'patches-without-manifest.json');
+  const manifestlessPatchedTex = join(extractDir, 'out-without-manifest.tex');
+  writeFileSync(manifestlessPatchJson, JSON.stringify({ patches: [{ id: extracted.slots[0].id, text: 'Source-derived slots work.' }] }));
+  execFileSync(NODE, ['patch-latex-content.mjs', join(ROOT, 'examples/latex-tex/resume-subheading.tex'), manifestlessPatchJson, manifestlessPatchedTex], { cwd: ROOT, encoding: 'utf-8' });
+  if (readFileSync(manifestlessPatchedTex, 'utf-8').includes('Source-derived slots work.')) {
+    pass('patch-latex-content.mjs safely derives slots when the manifest is omitted');
+  } else {
+    fail('manifestless CLI patch did not update the .tex file');
   }
   rmSync(extractDir, { recursive: true, force: true });
 } catch (e) {

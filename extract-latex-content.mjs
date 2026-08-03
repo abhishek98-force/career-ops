@@ -4,7 +4,7 @@
  * extract-latex-content.mjs — Detect LaTeX CV family and list editable prose slots.
  *
  * v1 families:
- *   - resumeSubheading (\\resumeItem bullets + \\textbf{Category}{: skills})
+ *   - resumeSubheading (standard/custom subheadings, bullets, skills, projects)
  *   - tabularx-itemize (\\item bodies inside itemize, no resume macros)
  *
  * Usage:

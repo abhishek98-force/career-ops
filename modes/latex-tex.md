@@ -11,7 +11,7 @@ Opt-in mode for candidates who already maintain a hand-tuned `.tex` CV. **Does n
 
 | Family | Detection | Editable prose |
 |--------|-----------|----------------|
-| `resumeSubheading` | `\resumeSubheading` + `\resumeItem`/`\resumeItemWithoutTitle`/`\resumeSubItem` | `\resumeItem{...}` and `\resumeItemWithoutTitle{}{...}` bullets; `\textbf{Category}{: items}` and `\resumeSubItem{Category}{items}` skill values |
+| `resumeSubheading` | `\resumeSubheading`, `\resumeSubheadingInline`, or `\resumeSubheadingRight` + supported content macros | `\resumeItem{...}` and `\resumeItemWithoutTitle{}{...}` bullets; `\textbf{Category}{: items}`, `\resumeSubItem{Category}{items}`, and `\resumeSkill{Category}{items}` skill values; `\resumeProject{Name}{description}` descriptions |
 | `tabularx-itemize` | `tabularx` + `itemize`, no resume macros | `\item` body text in the document body |
 
 Extraction only reads the document body (preamble macro definitions are skipped) and ignores commented-out macro calls — old bullets kept as `%` comments never become editable slots.
@@ -40,21 +40,21 @@ latex:
 4. Read JD (from context, report, or ask user)
 5. Tailor **only** the `slots[].text` values for JD fit (same ethics as `modes/latex.md` / `pdf`):
    - Extract 15–20 JD keywords
-   - Reorder bullets by relevance (reorder patch list order if needed; patch ids stay stable)
+   - Reorder bullets by relevance by assigning the strongest text to the earliest slot ids; patch-list order itself does not change document order
    - Inject keywords into existing achievements — **NEVER invent skills**
    - If `cv.md` exists, cross-check claims against it; omit anything not backed by in-scope sources
 6. Write patches file:
 
 ```json
 {
-  "slots": [ "... copy from extract manifest ..." ],
-  "patches": [
-    { "id": "bullet-0", "text": "Tailored plain-text bullet (no LaTeX escaping — the script escapes)" }
-  ]
+    "patches": [
+      { "id": "bullet-0", "text": "Tailored plain-text bullet (no LaTeX escaping — the script escapes)" },
+      { "id": "bullet-1", "remove": true }
+    ]
 }
 ```
 
-7. Run: `node patch-latex-content.mjs <source.tex> /tmp/cv-patches-{company}.json output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex`
+7. Run: `node patch-latex-content.mjs <source.tex> /tmp/cv-patches-{company}.json output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex`. Use `{ "id": "...", "remove": true }` to remove a lower-priority macro call cleanly (including its otherwise-empty source line). The patcher re-extracts slots from the source; when the JSON also carries `slots`, it rejects stale or mismatched manifests instead of applying unsafe offsets.
 8. Run: `node generate-latex.mjs output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --compile-only`
 9. Report: family, slot count, patched count, `.tex` path, `.pdf` path (or compile error)
 

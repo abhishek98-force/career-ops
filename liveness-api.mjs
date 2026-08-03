@@ -204,12 +204,25 @@ export async function checkLivenessViaApi(url) {
   try {
     let res;
     try {
-      res = await fetch(apiUrl, {
+      const requestOptions = {
         method: 'GET',
         headers: { 'user-agent': 'career-ops-liveness/1.0', accept: 'application/json' },
         redirect: 'error', // refuse server-side redirects (SSRF + ambiguity guard)
         signal: controller.signal,
-      });
+      };
+      res = await fetch(apiUrl, requestOptions);
+
+      // Some Workday tenants use a hyphenated public hostname but an
+      // underscore-separated internal CXS tenant id (for example,
+      // osv-amerisure -> osv_amerisure). Workday returns 422 for the
+      // host-derived tenant even when the posting is live. Retry only that
+      // specific response and deterministic substitution; the trusted host,
+      // shard, site, and validated job path remain unchanged.
+      if (ats === 'workday' && res.status === 422 && parts.tenant.includes('-')) {
+        const cxsTenant = parts.tenant.replace(/-/g, '_');
+        const alternateApiUrl = `https://${parts.tenant}.${parts.shard}.myworkdayjobs.com/wday/cxs/${cxsTenant}/${parts.site}/job/${parts.jobPath}`;
+        res = await fetch(alternateApiUrl, requestOptions);
+      }
     } catch {
       return null; // network / timeout / redirect → inconclusive, let Playwright decide
     }
