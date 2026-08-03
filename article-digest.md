@@ -7,7 +7,7 @@ This file records source-grounded proof points that career-ops may use in applic
 - **Role:** Software Engineering Intern
 - **Dates:** July 2026 - Present
 - **Domain:** Multi-cloud Spot pricing, cloud infrastructure intelligence, data ingestion, persistence, testing, and platform delivery
-- **Contribution record:** 35 directly authored non-merge commits and 7 merge commits identified during the repository audit.
+- **Contribution record:** 59 directly authored non-merge commits and 13 merge commits attributed to the listed Git identities on the audited `main` branch. Merge authorship records integration activity and does not establish sole authorship of every merged change.
 - **Git identities:** Abhishek `<gopalakrishnanunni.a@northeastern.edu>`, Abhishek Unnithan `<abhishek.unnithan@sedailabs.io>`, and Abhishek Unnithan `<gopalakrishnanunni.a@northeastern.edu>`. These addresses are for contribution attribution only and must not replace the candidate's contact email.
 
 ### Azure Pricing Ingestion
@@ -40,67 +40,88 @@ This file records source-grounded proof points that career-ops may use in applic
 - Traceability: commits `a4d21e7`, `b1f3588`, `10f279d`, and `526841a`; shared writer tests; and `scrapers/azure/EVICTIONS.md`.
 - Ownership is limited to persistence integration, testing, and documentation. Another contributor authored the Azure Resource Graph fetch implementation.
 
+### Azure Placement And Pricing Integration
+
+- Integrated Azure placement observations with shared persistence so one provider signal updates every existing Linux and Windows live-state row for the matching SKU and region.
+- Appended placement history while preserving operating-system-specific live state and clearing stale placement bands when Azure returned no current category.
+- Prevented placement observations from creating catalog or live-state records when no priced Azure state existed.
+- Added writer and parser coverage for multi-OS updates, catalog-only no-creation behavior, Windows-only state preservation, and real-response parsing.
+- Refined Azure SKU eligibility and excluded Dedicated Host rows from Retail Prices ingestion.
+- Traceability: candidate-authored integration commits `1222fee`, `eb20ec4`, `b10151a`, and `8c4a987`, merged through PR #93 / merge commit `1920f7d`; shared writers, writer tests, Azure placement parser tests, and `retail_prices.py`.
+- PR #93 included an original placement implementation from another contributor; ownership here is limited to the candidate-authored integration, persistence, filtering, cleanup, and test changes.
+
 ### Automated Testing And CI
 
-- Created GitHub Actions validation for pull requests and pushes to `main` using Python 3.12 and a locked `uv` workspace installation.
+- Created GitHub Actions validation for pull requests to `main` using Python 3.12 and a locked `uv` workspace installation.
 - Added concurrency cancellation, Python tests, Ruff, and TypeScript validation with Node.js 22 and `npm ci`.
 - Pinned CI's `uv` setup to version 0.10.9.
-- Added a dependent image-build job for API, UI, AWS scraper, Azure scraper, and GCP scraper images after validation succeeds.
-- Traceability: commits `0bbb04f`, `4347c98`, `abeab17`, `fd16aba`, and `4abd7bd`; `.github/workflows/ci.yml`; `Makefile`; and `scripts/build-images.sh`.
-- The five-image build extension shares the local-branch status described below and must not be represented as remotely merged until verified.
+- Replaced floating Python and `uv` container sources with Python 3.12.13 and `uv` 0.10.9 images pinned by SHA-256 digest across the API and three cloud-scraper Dockerfiles.
+- Added a dependent container gate that builds the API, UI, AWS scraper, Azure scraper, and GCP scraper images and deploys them to an ephemeral kind cluster.
+- Waited for TimescaleDB, Alembic migration completion, API and UI readiness, and four seeded scraper Jobs before accepting the container gate.
+- Added workload, Pod, Job, and event diagnostics on failure and unconditional kind-cluster cleanup.
+- Traceability: merged PR #132, merge commit `8a354fe`; `.github/workflows/ci.yml`; service Dockerfiles; `scripts/dev-up.sh`; `scripts/build-images.sh`; and the Kustomize resources under `deployment/`.
+- The container gate proves image construction, workload boot, readiness, migration completion, and seeded scraper exit-zero execution in dummy mode. It does not establish data correctness, real-cloud scraper completion, or production reliability.
 
-### Docker Reproducibility - Local Branch Evidence
+### Azure Dummy Pricing And Signal Fidelity
 
-- Replaced floating Python and `uv` container sources with Python 3.12.13 and `uv` 0.10.9 images pinned by SHA-256 digest.
-- Applied pinning across the API and AWS, Azure, and GCP scraper Dockerfiles and successfully built all five application images locally.
-- Traceability: commits `89ded8e` and `4abd7bd`; service Dockerfiles; and `scripts/build-images.sh`.
-- These commits exist on a local branch ahead of `origin/main`; describe the implementation and local validation, but do not claim remote merge or remote CI validation.
+- Built an Azure-specific dummy scenario covering five VM SKUs across East US, West US 2, West Europe, and Japan East.
+- Generated separate Linux and Windows Spot and on-demand observations for each supported SKU-region pair, with region-specific effective dates and reproducible identity-specific Spot-price drift.
+- Modeled Azure eviction-rate bands as normalized interruption percentages and Low/Medium/High risk categories.
+- Replaced generic numeric placement data with Azure-style categorical placement results, including explicit unavailable cases.
+- Switched Azure pricing, eviction, and placement dummy paths to the provider-specific model while retaining shared fleet specifications.
+- Traceability: merged PR #138, authored commit `61988da`, merge commit `84e5f24`; `scrapers/azure/src/spotintel_azure/dummy_data.py`; and the Azure pricing, eviction, and placement scrapers.
+- Existing lint, Python-test, Terraform-validation, image-build, and kind jobs passed for the PR, but no dedicated assertions verify every scenario value, drift calculation, or band mapping.
 
-### Local Kubernetes Validation - Unstaged Evidence
+### Artifact Registry And Keyless Image Delivery
 
-- Implemented a kind-based Kubernetes validation workflow using kind v0.32.0 and kubectl v1.36.1.
-- Loaded five locally built images into an ephemeral cluster, applied the local Kustomize overlay, and checked TimescaleDB readiness, Alembic migration completion, API rollout, and UI rollout.
-- Added workload, Pod, and event diagnostics plus unconditional cluster cleanup.
-- Successfully completed core local validation and deleted the temporary cluster afterward.
-- Traceability: current `.github/workflows/ci.yml` working-tree changes, `scripts/dev-up.sh`, kind configuration, Kustomize files, TimescaleDB StatefulSet and migration Job, and scraper CronJobs.
-- The workflow is unstaged and has not passed remote GitHub Actions. This supports local core-rollout validation only, not production Kubernetes operation or full real-scraper validation.
+- Added Terraform for a Google Artifact Registry Docker repository and a repository-scoped publishing service account.
+- Configured GitHub Actions authentication through OIDC and Workload Identity Federation instead of persistent service-account keys, restricted by immutable repository and owner identifiers and the `main` branch.
+- Added Terraform formatting, locked-provider initialization, and static validation to pull-request CI.
+- Implemented a release workflow that builds and publishes the API, UI, and three cloud-scraper images with full commit-SHA tags and separate Artifact Registry-backed build caches.
+- Kept image-publishing and GKE-deployment identities separate so publishing credentials do not also grant deployment access.
+- Traceability: merged PRs #135 and #136; merge commits `e152832` and `c870864`; `terraform/infrastructure/`; and `.github/workflows/release.yml`.
 
-### GKE Implementation And Validation - Candidate Confirmed
+### GKE Infrastructure And Deployment Path
 
-- Implemented, deployed, and validated Spot Intelligence on Google Kubernetes Engine.
-- Used Terraform to provision required APIs, networking, Artifact Registry, IAM, a zonal GKE cluster, and a dedicated node pool.
-- Published five API, UI, AWS scraper, Azure scraper, and GCP scraper images through Artifact Registry.
-- Applied a GKE-specific Kustomize deployment for API, UI, and scheduled cloud-scraper workloads.
-- Deployed TimescaleDB with persistent Kubernetes storage and Alembic migration execution.
-- Configured and validated GCP Workload Identity for GCP scraper workloads and multi-cloud credentials for AWS and Azure scraper workloads.
-- Validated the deployed application stack.
-- This completed scope is candidate-confirmed and supersedes earlier planning-only status. Repository branch, commit, pull-request status, environment classification, production use, and real-data validation scope remain unspecified.
+- Added Terraform-managed infrastructure for a regional GKE Autopilot cluster with Workload Identity Federation, deletion protection, a dedicated node service account, and repository-scoped image-pull access.
+- Added a protected GCS Terraform-state bucket with versioning, uniform bucket-level access, enforced public-access prevention, soft deletion, noncurrent-version cleanup, `force_destroy = false`, and Terraform deletion protection.
+- Separated infrastructure and cluster-bootstrap state under independent remote-state prefixes.
+- Created separate GitHub publisher and deployer identities plus a dedicated GKE node identity, with repository-scoped Artifact Registry writer/reader access and project-level `container.clusterViewer` for deployment discovery.
+- Added namespace-scoped Kubernetes deployment RBAC without direct Secret-reading or namespace-creation permissions.
+- Installed the pinned External Secrets Operator through a separate Terraform bootstrap root and restricted its token-request permission to the dedicated `spotintel-secrets` service account.
+- Integrated Google Secret Manager with a namespaced `SecretStore` and `ExternalSecret` for database credentials while keeping secret values outside Terraform state and Git.
+- Added a production Kustomize overlay with a LoadBalancer UI restricted to the configured operator `/32` source range and unreleased placeholder images that cannot produce runnable workloads before CI substitution.
+- Implemented a manually dispatched deployment job using the GitHub environment named `production`; it validates the full lowercase 40-hex image-tag format, authenticates through OIDC, substitutes commit-SHA-tagged images, synchronizes database credentials, recreates the migration Job, applies workloads, and waits for database, migration, API, and UI readiness.
+- Successfully published all five images for merge commit `43d0ecd` and completed the post-merge GKE deployment workflow, including secret synchronization and readiness gates.
+- Authored operational documentation for separate Terraform roots, remote-state initialization, plan/apply review, External Secrets verification, secret-version handling, manual deployment, failure recovery, and state safety.
+- Traceability: merged PR #140, merge commit `43d0ecd`; `terraform/infrastructure/`; `terraform/bootstrap/`; `deployment/overlays/production/`; `.github/workflows/release.yml`; [publication run 30771529963](https://github.com/SedaiEngineering/sedailabs-spotintelligence/actions/runs/30771529963); and [deployment run 30771905568](https://github.com/SedaiEngineering/sedailabs-spotintelligence/actions/runs/30771905568).
+- The verified deployment used dummy-mode scraper configuration. A successful deployment run does not establish sustained production operation, real-cloud data collection, customer use, or a human approval event.
 
 ### Collaboration And Shared-Code Safety
 
 - Contributed across a shared monorepo containing scraper, common persistence, database, API, UI, and deployment packages.
-- Delivered merged work through PRs #68, #72, #75, #81, #94, and #96.
+- Delivered authored work through PRs #68, #72, #75, #81, #94, #96, #132, #135, #136, #138, and #140, plus candidate-authored integration changes merged through PR #93.
 - Resolved persistence integration issues, test failures, lint findings, and merge conflicts affecting shared components.
 - Protected provider-neutral writer behavior with AWS and GCP regression coverage alongside Azure-specific tests.
 
 ### Tailoring Angles
 
-- **Backend and data roles:** Azure API parsing, deterministic normalization, effective-date selection, incomplete-record preservation, SQLModel writers, PostgreSQL/TimescaleDB, and Alembic migrations.
+- **Backend and data roles:** Azure API parsing, deterministic normalization, effective-date selection, incomplete-record preservation, placement and interruption persistence, SQLModel writers, PostgreSQL/TimescaleDB, and Alembic migrations.
 - **Platform roles:** Shared canonical models, provider-neutral persistence behavior, placeholder enrichment, live-state/history semantics, and regression testing across AWS, Azure, and GCP.
-- **Cloud and DevOps roles:** GitHub Actions, locked dependencies, five-image builds, Docker digest pinning, Terraform, GKE, Artifact Registry, Workload Identity, Kustomize, persistent storage, and scheduled workloads.
-- **Reliability roles:** Invalid-data rejection, fixture-backed edge-case coverage, no-phantom-record safeguards, one-history-record semantics, diagnostics, rollout checks, and cleanup.
+- **Cloud and DevOps roles:** GitHub Actions, locked dependencies, five-image builds, Docker digest pinning, Terraform, protected remote state, regional GKE Autopilot, Artifact Registry, OIDC, Workload Identity Federation, separate cloud identities, scoped IAM/RBAC, External Secrets Operator, Secret Manager, Kustomize, commit-SHA image delivery, operator-IP access restriction, stateful TimescaleDB deployment, and deployment readiness gates.
+- **Reliability roles:** Invalid-data rejection, fixture-backed edge-case coverage, no-phantom-record safeguards, one-history-record semantics, dummy-signal fidelity, diagnostics, migration and rollout checks, failure cleanup, protected state, and unreleased-image guards.
 - **Collaboration roles:** Shared-monorepo integration, merged pull requests, conflict resolution, lint/test remediation, and cross-provider regression protection.
 
 ### Truth Boundaries And Missing Evidence
 
 - Do not claim ownership of the entire Azure catalog scraper, Azure Resource Graph fetcher, platform, API/UI, or MCP implementation.
 - Do not claim AI or agentic systems, direct React UI work, FastAPI route ownership, FastMCP tools, NoSQL systems, or cybersecurity architecture for this role.
-- Do not claim production scale, production execution, customer use, uptime, throughput, latency, database volume, cloud-cost savings, or quantified user impact.
-- Describe Docker and five-image build changes as local-branch work until remote status is verified.
-- Describe the kind workflow as unstaged local validation without remote CI or production-cluster evidence.
-- GKE, Terraform, Artifact Registry, Workload Identity, persistent storage, multi-cloud credentials, scheduled workloads, deployment, and validation may be described as completed candidate-confirmed work.
-- Do not describe GKE as production, customer-facing, or operated with production reliability practices until environment and operating status are verified.
-- Catalog bootstrapping, real scheduled-scraper completion, API/UI multi-cloud data display, persistence across Pod recreation, monitoring, alerting, backup, disaster recovery, autoscaling, ingress, TLS, and network policies remain unverified.
+- Do not claim sustained or customer-facing production operation, production scale, customer use, uptime, throughput, latency, database volume, cloud-cost savings, or quantified user impact.
+- Docker pinning, five-image builds, kind boot validation, Terraform, Artifact Registry publishing, regional GKE Autopilot infrastructure, External Secrets integration, and the deployment workflow are merged repository work.
+- The successful post-merge GKE workflow supports one completed deployment with migration, secret, database, API, and UI readiness gates; it does not prove sustained production operation or human approval.
+- Do not claim that PR #139's cross-cloud QA harness was authored by the candidate. Its implementation commits are attributed to other contributors.
+- Do not describe GKE as customer-facing or operated with production reliability practices until environment use and operating history are verified.
+- Real scheduled-scraper completion, real-cloud data validation through the deployed stack, API/UI multi-cloud data display, persistence across Pod recreation, monitoring, alerting, backup, disaster recovery, ingress, TLS, and network policies remain unverified.
 
 ## Augesys - Microsoft Entra Compliance-as-a-Service Platform
 

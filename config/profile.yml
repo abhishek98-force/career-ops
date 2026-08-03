@@ -1,0 +1,82 @@
+# Career-Ops Profile Configuration
+
+candidate:
+  full_name: "Abhishek Gopalakrishnan Unnithan"
+  email: "abhishekunnithan@gmail.com"
+  phone: "(857) 350-2419"
+  location: "San Jose, CA"
+  portfolio_url: "https://github.com/abhishek98-force"
+  github: "github.com/abhishek98-force"
+  photo: ""
+
+target_roles:
+  primary:
+    - "Backend Software Engineer"
+    - "Platform Engineer"
+    - "Cloud Engineer"
+    - "DevOps Engineer"
+    - "Full-Stack Software Engineer"
+  archetypes:
+    - name: "Backend / Platform Engineer"
+      level: "Entry/Mid"
+      fit: "primary"
+    - name: "Cloud / DevOps Engineer"
+      level: "Entry/Mid"
+      fit: "primary"
+    - name: "Full-Stack Software Engineer"
+      level: "Entry/Mid"
+      fit: "primary"
+
+narrative:
+  headline: "Backend, platform, and full-stack engineer building cloud-native systems"
+  superpowers:
+    - "End-to-end cloud delivery from backend implementation through infrastructure, CI/CD, Kubernetes, and deployment validation"
+    - "Cloud-native backend systems and APIs"
+    - "Asynchronous data and document-processing pipelines"
+  proof_points:
+    - name: "Boston Liquor License Tracker"
+      url: "https://github.com/codeforboston/boston-liquor-license-tracker/pulls?q=is%3Apr+is%3Aclosed+author%3Aabhishek98-force"
+      hero_metric: "Reduced licensing board list updates from 15 minutes to 5 seconds"
+    - name: "Sedai Labs Spot Intelligence"
+      hero_metric: "Deployed and validated a five-service multi-cloud stack on GKE with Terraform, Kustomize, persistent TimescaleDB, and Workload Identity"
+    - name: "Augesys Microsoft Entra compliance platform"
+      hero_metric: "Built a manifest-driven full-stack validation workflow with FastAPI, Microsoft Graph, OPA/Rego, and React"
+    - name: "VisionAnnotator"
+      hero_metric: "Reduced YOLOv8-Large model size by 78% through ONNX conversion in a full-stack annotation system"
+    - name: "Data Collection With a DAG"
+      url: "https://medium.com/@abhishekunnithan/data-collection-with-a-dag-120d1171a9ee"
+      hero_metric: "Published technical article on dependency-centric data collection architecture"
+    - name: "IpserLabs document-processing pipeline"
+      hero_metric: "Reduced ingestion failures by 23%"
+    - name: "FedEx cargo-tracking components"
+      hero_metric: "Reduced customer-support issue resolution time by 38%"
+
+compensation:
+  target_range: "$60K-$200K"
+  currency: "USD"
+  minimum: "$60K"
+  location_flexibility: "Open to relocation"
+
+location:
+  country: "United States"
+  city: "San Jose"
+  timezone: "America/Los_Angeles"
+  visa_status: "Temporary US work authorization; future employer sponsorship required"
+  authorized_in:
+    - "United States"
+  needs_sponsorship: true
+
+language:
+  output: en
+
+spend_tier: standard
+
+cv:
+  output_format: "latex"
+  template: "word-classic"
+  word_template: "/home/wsl/resume_optimizer/MASTER_RESUME.docx"
+  page_target: 2
+
+latex:
+  source: "data/templates/Abhishek_Resume_LLM_Flexible_Template_v8.tex"
+  compiler: "data/bin/tectonic"

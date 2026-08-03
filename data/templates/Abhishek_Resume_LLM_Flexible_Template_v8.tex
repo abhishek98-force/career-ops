@@ -1,0 +1,178 @@
+% USER-OWNED CAREER-OPS LATEX RESUME TEMPLATE
+% Protected under data/ so career-ops system updates do not replace it.
+% Preserve the layout and keep identity, employers, titles, dates, project
+% names, open-source role, and education grounded in cv.md.
+% Tailor only skills and achievement/project prose. Employment entries use
+% three bullets by default; generated copies may span two pages before editing.
+
+\documentclass[letterpaper,10pt]{article}
+
+\usepackage[letterpaper,top=18bp,bottom=18bp,left=36.1bp,right=36bp]{geometry}
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage[sfdefault]{carlito}
+  \renewcommand{\familydefault}{\sfdefault}
+  \input{glyphtounicode}
+  \pdfgentounicode=1
+\else
+  \usepackage{fontspec}
+  \IfFileExists{/mnt/c/Windows/Fonts/calibri.ttf}{
+    \setmainfont{calibri.ttf}[
+      Path=/mnt/c/Windows/Fonts/,
+      BoldFont=calibrib.ttf,
+      ItalicFont=calibrii.ttf,
+      BoldItalicFont=calibriz.ttf
+    ]
+  }{
+    \IfFontExistsTF{Carlito}{
+      \setmainfont{Carlito}
+    }{
+      \setmainfont{Liberation Sans}
+    }
+  }
+\fi
+\usepackage[english]{babel}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{needspace}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{0pt}
+\raggedright
+
+% ---------- Reusable commands ----------
+\newcommand{\resumeSection}[1]{%
+  \vspace{12.2bp}
+  {\bfseries\underline{#1}}\par
+}
+
+\newcommand{\resumeSubheading}[2]{%
+  \begin{tabular*}{\textwidth}{@{}l@{\extracolsep{\fill}}r@{}}
+    \bfseries #1 & \bfseries #2
+  \end{tabular*}\par
+}
+
+\newcommand{\resumeEntrySpace}{\vspace{12.2bp}}
+
+\newcommand{\resumeSubHeadingListStart}{\begingroup}
+\newcommand{\resumeSubHeadingListEnd}{\endgroup}
+
+\newcommand{\resumeItemListStart}{%
+  \begin{itemize}[
+    leftmargin=36bp,
+    labelindent=18.8bp,
+    labelwidth=4.2bp,
+    labelsep=13bp,
+    topsep=0pt,
+    partopsep=0pt,
+    parsep=0pt,
+    itemsep=0pt
+  ]
+}
+\newcommand{\resumeItemListEnd}{\end{itemize}}
+\newcommand{\resumeItem}[1]{\item #1}
+
+\newcommand{\resumeSubItem}[2]{\resumeItem{\textbf{#1:} #2}}
+
+\newcommand{\resumeEducationItem}[2]{%
+  \item
+  \begin{tabular*}{\linewidth}{@{}l@{\extracolsep{\fill}}r@{}}
+    #1 & #2
+  \end{tabular*}%
+}
+
+\begin{document}
+\fontsize{10bp}{12.2bp}\selectfont
+
+% ---------- Header ----------
+\vspace*{0.9bp}
+{\centering\fontsize{14bp}{17bp}\selectfont\bfseries
+Abhishek Gopalakrishnan Unnithan\par}
+\fontsize{10bp}{12.2bp}\selectfont
+
+\begin{center}
+  \textbf{Location:} San Jose, CA (Open to Relocation)
+  \enspace $\vert$ \enspace
+  \textbf{Phone:} (857) 350-2419
+  \enspace $\vert$ \enspace
+  \textbf{Email:} \href{mailto:abhishekunnithan@gmail.com}{abhishekunnithan@gmail.com} \\
+  \textbf{Portfolio:} \href{https://github.com/abhishek98-force}{\underline{github.com/abhishek98-force}}
+  \enspace $\vert$ \enspace
+  \textbf{LinkedIn:} \href{https://linkedin.com/in/abhishek-unnithan-095284185/}{\underline{linkedin.com/in/abhishek-unnithan-095284185}}
+\end{center}
+
+% ---------- Skills ----------
+\vspace{3.3bp}
+\resumeSection{SKILLS}
+\resumeItemListStart
+  \resumeSubItem{Languages}{[Language 1, Language 2, Language 3, Language 4]}
+  \resumeSubItem{Frameworks \& Systems}{[Frameworks, APIs, distributed systems, databases, and backend technologies]}
+  \resumeSubItem{Cloud, Tools \& AI}{[Cloud platforms, infrastructure tools, CI/CD tools, AI technologies, and developer tooling]}
+\resumeItemListEnd
+
+% ---------- Experience ----------
+\resumeSection{RELEVANT EXPERIENCE}
+\resumeSubHeadingListStart
+
+\resumeSubheading{Software Engineering Intern, Sedai Labs - Spot Intelligence}{July 2026 - Present}
+\resumeItemListStart
+  \resumeItem{Bullet 1}
+  \resumeItem{Bullet 2}
+  \resumeItem{Bullet 3}
+\resumeItemListEnd
+
+\resumeEntrySpace
+\resumeSubheading{Software Development Engineer, Augesys}{March 2026 - Present}
+\resumeItemListStart
+  \resumeItem{Bullet 1}
+  \resumeItem{Bullet 2}
+  \resumeItem{Bullet 3}
+\resumeItemListEnd
+
+\resumeEntrySpace
+\resumeSubheading{Software Development Intern, IpserLabs}{January 2025 - May 2025}
+\resumeItemListStart
+  \resumeItem{Bullet 1}
+  \resumeItem{Bullet 2}
+  \resumeItem{Bullet 3}
+\resumeItemListEnd
+
+\resumeEntrySpace
+\resumeSubheading{Software Engineer, Wipro}{July 2021 - August 2023}
+\resumeItemListStart
+  \resumeItem{Bullet 1}
+  \resumeItem{Bullet 2}
+  \resumeItem{Bullet 3}
+\resumeItemListEnd
+\resumeSubHeadingListEnd
+
+% ---------- Open source ----------
+\Needspace{8\baselineskip}
+\resumeSection{OPEN SOURCE CONTRIBUTIONS}
+\resumeSubheading{Core Contributor, Boston Liquor License Tracker}{}
+\resumeItemListStart
+  \resumeItem{Bullet 1}
+  \resumeItem{Bullet 2}
+\resumeItemListEnd
+
+% ---------- Projects ----------
+\Needspace{11\baselineskip}
+\resumeSection{SELECT PROJECTS}
+\resumeItemListStart
+  \resumeSubItem{Visual Objects}{Bullet 1}
+\resumeItemListEnd
+
+% ---------- Education ----------
+\resumeSection{EDUCATION}
+\resumeItemListStart
+  \resumeEducationItem{MS in Software Engineering Systems, Northeastern University}{September 2023 - December 2025}
+  \resumeEducationItem{BTech in Electrical/Electronics Engineering, College of Engineering Trivandrum}{September 2017 - May 2021}
+\resumeItemListEnd
+
+\end{document}
