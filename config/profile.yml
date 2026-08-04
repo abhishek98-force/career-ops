@@ -73,8 +73,6 @@ spend_tier: standard
 
 cv:
   output_format: "latex"
-  template: "word-classic"
-  word_template: "/home/wsl/resume_optimizer/MASTER_RESUME.docx"
   page_target: 2
 
 latex:

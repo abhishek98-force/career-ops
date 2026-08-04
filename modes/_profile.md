@@ -40,6 +40,15 @@ The candidate's chosen primary differentiator is **end-to-end cloud delivery**. 
 - Do not claim production use, customer-facing operation, scale, uptime, latency, throughput, database volume, cloud-cost improvement, or quantitative user impact.
 - Do not claim ownership of the Azure Resource Graph fetcher, entire platform, API/UI, MCP, AI/agentic systems, direct React or FastAPI work, NoSQL, or cybersecurity architecture.
 
+## Salesforce And CRM Tailoring
+
+- For Salesforce, CRM, customer-service platform, and enterprise-operations roles, prioritize the Salesforce CRM proof points in `article-digest.md`: Apex controllers, Lightning Web Components, SOQL/SOSL, Queueable and Batchable automation, Big Objects, data deduplication, sharing logic, Workspace API navigation, agent workflows, dashboard alerts, Named Credentials, and secure document delivery.
+- For Salesforce data-quality roles, lead with the 43% storage reduction from Big Object archival and the separately documented 21% redundancy reduction across more than 1M customer account records. Do not combine these with the 30K+ user workflow scope.
+- For FedEx/customer-operations roles, prioritize the 10+ Lightning components, secure shipment-document delivery, Workspace API integration, and confirmed 38% issue-resolution improvement.
+- For Salesforce integration roles, lead with the Farmers home-screen LWC and Apex controller using a Named Credential for external news, then connect platform work to REST/SOAP APIs, Python, TypeScript, JavaScript, SQL, RabbitMQ, PostgreSQL, and access/permissions management only when relevant to the JD.
+- For Salesforce CI/CD and quality roles, state that the candidate integrated SonarQube analysis into an existing GitHub Actions pull-request pipeline and worked with Apex tests. Do not claim ownership of the pipeline's existing Apex-test job or scratch-org deployment workflow.
+- Do not claim ownership of the complete Salesforce implementations, certification dates or IDs, Salesforce platform scale, the FedEx Apex wrapper/API layer, trigger/async test suites, or unmeasured Apex-test/production metrics.
+
 ## Augesys Tailoring
 
 - For backend and platform roles, prioritize the FastAPI product APIs, manifest-driven DAG engine, reusable handlers, Microsoft Graph fan-out collection, normalized artifacts, and structured failure handling.

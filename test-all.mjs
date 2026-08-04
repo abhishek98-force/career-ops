@@ -9964,6 +9964,46 @@ try {
     fail(`resumeItemWithoutTitle slot mismatch (want 2 bullets/3 skills): ${JSON.stringify(wtManifest.slots.map(s => ({ id: s.id, text: s.text.slice(0, 40) })))}`);
   }
 
+  const wtSkill = wtSkills[0];
+  if (wtSkill?.label === 'Languages' && wtSkill.labelSpan?.start < wtSkill.span.start) {
+    pass('skill slots expose editable category labels and value spans');
+  } else {
+    fail(`skill slot is missing label metadata: ${JSON.stringify(wtSkill)}`);
+  }
+
+  const adaptiveSkills = applyPatches(
+    withoutTitleFixture,
+    [{ id: wtSkill.id, label: 'Backend & APIs', text: 'FastAPI, PostgreSQL' }],
+    wtManifest.slots,
+  );
+  if (adaptiveSkills.includes('\\resumeSubItem{Backend \\& APIs}{FastAPI, PostgreSQL}')) {
+    pass('applyPatches rewrites and escapes a skill category with its values');
+  } else {
+    fail('applyPatches did not rewrite the skill category and values together');
+  }
+
+  const valueOnlySkill = applyPatches(
+    withoutTitleFixture,
+    [{ id: wtSkill.id, text: 'Rust, SQL' }],
+    wtManifest.slots,
+  );
+  if (valueOnlySkill.includes('\\resumeSubItem{Languages}{Rust, SQL}')) {
+    pass('legacy value-only skill patches preserve the existing category');
+  } else {
+    fail('value-only skill patch changed or lost the existing category');
+  }
+
+  const removedSkill = applyPatches(
+    withoutTitleFixture,
+    [{ id: wtSkills[1].id, remove: true }],
+    wtManifest.slots,
+  );
+  if (!removedSkill.includes('\\resumeSubItem{Tools}{Docker, PostgreSQL, Redis}')) {
+    pass('applyPatches removes an unused skill row cleanly');
+  } else {
+    fail('applyPatches left an unused skill row in the document');
+  }
+
   if (wtManifest.slots.every(s => !s.text.includes('#1') && !s.text.includes('#2'))) {
     pass('preamble macro definitions are not extracted as slots');
   } else {

@@ -7,7 +7,7 @@
  *   node patch-latex-content.mjs <source.tex> <patches.json> <output.tex>
  *
  * patches.json:
- *   { "patches": [ { "id": "bullet-0", "text": "Tailored bullet text" }, { "id": "bullet-1", "remove": true } ] }
+ *   { "patches": [ { "id": "bullet-0", "text": "Tailored bullet text" }, { "id": "skill-0", "label": "Backend & APIs", "text": "FastAPI, PostgreSQL" }, { "id": "bullet-1", "remove": true } ] }
  *
  * Optional manifest fields in patches.json (validated against the source):
  *   { "slots": [...], "patches": [...] }
@@ -60,7 +60,7 @@ async function main() {
   const slots = manifest.slots;
 
   if (Array.isArray(payload.slots)) {
-    const normalized = (list) => list.map(({ id, kind, text, span }) => ({ id, kind, text, span }));
+    const normalized = (list) => list.map(({ id, kind, label, labelSpan, text, span }) => ({ id, kind, label, labelSpan, text, span }));
     if (JSON.stringify(normalized(slots)) !== JSON.stringify(normalized(payload.slots))) {
       console.error('Patch manifest is stale or belongs to a different source template; extract it again.');
       process.exit(1);

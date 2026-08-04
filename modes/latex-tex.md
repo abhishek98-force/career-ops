@@ -38,17 +38,20 @@ latex:
 2. Run: `node extract-latex-content.mjs <source.tex> --out /tmp/cv-slots-{company}.json`
 3. If `supported: false` → show `error` + `hint`; do not proceed
 4. Read JD (from context, report, or ask user)
-5. Tailor **only** the `slots[].text` values for JD fit (same ethics as `modes/latex.md` / `pdf`):
-   - Extract 15–20 JD keywords
-   - Reorder bullets by relevance by assigning the strongest text to the earliest slot ids; patch-list order itself does not change document order
-   - Inject keywords into existing achievements — **NEVER invent skills**
-   - If `cv.md` exists, cross-check claims against it; omit anything not backed by in-scope sources
+5. Tailor the editable slot values for JD fit (same ethics as `modes/latex.md` / `pdf`):
+    - Extract 15–20 JD keywords
+    - Reorder bullets by relevance by assigning the strongest text to the earliest slot ids; patch-list order itself does not change document order
+    - Inject keywords into existing achievements — **NEVER invent skills**
+    - Skill slots may expose `label` and `labelSpan`; when present, patch both `label` and `text` to organize skills into coherent role-specific categories
+    - Remove unused skill rows instead of padding them or duplicating skills across categories
+    - If `cv.md` exists, cross-check claims against it; omit anything not backed by in-scope sources
 6. Write patches file:
 
 ```json
 {
     "patches": [
       { "id": "bullet-0", "text": "Tailored plain-text bullet (no LaTeX escaping — the script escapes)" },
+      { "id": "skill-0", "label": "Backend & APIs", "text": "FastAPI, Flask, REST APIs" },
       { "id": "bullet-1", "remove": true }
     ]
 }
@@ -66,7 +69,7 @@ Same as `modes/latex.md` and `modes/pdf.md`:
 
 - Keywords get **reformulated, never fabricated**
 - Never add tools, skills, or metrics the candidate does not already have in the source `.tex` or `cv.md`
-- Preserve inline LaTeX markup inside bullets when possible; when rewriting, output **plain text** in patch JSON (the patch script escapes special characters)
+- Preserve inline LaTeX markup inside bullets when possible; when rewriting, output **plain text** in patch JSON (the patch script escapes skill labels and content as well as bullet text)
 - Do **not** rewrite preamble, macro definitions, section titles, dates, company names, or job titles unless the user explicitly asks
 
 ## What this mode does NOT do

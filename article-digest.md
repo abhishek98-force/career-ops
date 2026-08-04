@@ -123,6 +123,57 @@ This file records source-grounded proof points that career-ops may use in applic
 - Do not describe GKE as customer-facing or operated with production reliability practices until environment use and operating history are verified.
 - Real scheduled-scraper completion, real-cloud data validation through the deployed stack, API/UI multi-cloud data display, persistence across Pod recreation, monitoring, alerting, backup, disaster recovery, ingress, TLS, and network policies remain unverified.
 
+## Salesforce CRM Engineering - Wipro
+
+- **Role:** Salesforce Developer
+- **Dates:** July 2021 - August 2023
+- **Farmers Insurance:** July 2021 - February 2023
+- **FedEx:** February 2023 - August 2023
+- **Domain:** Salesforce platform engineering, CRM data quality, Lightning user interfaces, workflow automation, shipment and policy operations, access and sharing logic, and enterprise delivery.
+
+### Salesforce Certifications
+
+- Salesforce Certified Platform Developer I.
+- Salesforce Certified Administrator.
+- Salesforce Certified JavaScript Developer I.
+
+### Farmers Insurance
+
+- Built a scheduled chained Queueable process that selected soft-deleted Accounts through a flag field, copied most Account fields into Salesforce Big Objects, and deleted the source Accounts after archival.
+- Observed a 43% Salesforce-storage reduction for the archival work through the organization's Salesforce storage settings.
+- Co-developed a Batchable duplicate-account process across custom matching, master-record selection, sharing logic, batch orchestration, testing, and debugging. Matching used Account Contact Relationship data and a master-status field.
+- The canonical CV separately records a 21% redundancy reduction across more than 1M customer account records. Keep that outcome separate from the 30K+ user workflow scope because the calculation method is not currently documented.
+- Built agent-dashboard alert-management features with homepage counters, contextual policy-level alerts, backend controllers, configuration logic, and dynamic UI components.
+- Built a home-screen Lightning Web Component and Apex controller that used a Named Credential to retrieve and display external news relevant to Farmers Insurance.
+
+### FedEx
+
+- Built a Lightning Web Components document-delivery feature with an Apex controller that enabled agents to securely email shipment documents to clients.
+- Built more than 10 Lightning Web Components for shipment progress, package detail, delivery timelines, and disruption indicators, reducing issue-resolution time by 38%.
+- The shipment UI consumed data from an existing Apex wrapper that called the FedEx API and normalized its responses into UI-specific objects; do not claim ownership of that wrapper or the API integration layer.
+- Integrated the Salesforce Workspace API into Global Navigation for navigation across Lightning tabs.
+- Trained developers on Chrome DevTools and Apex Debugger. A 20% productivity figure was a sprint-retrospective estimate and is not approved as a resume metric.
+
+### Salesforce Technical Evidence
+
+- Platform development: Apex controllers for Lightning Web Components, async jobs, trigger-handler bug fixes, Lightning Web Components, SOQL/SOSL, Apex Test Framework, Flows, Process Builder, Custom Objects, Validation Rules, Page Layouts, Record Types, Profiles and Permission Sets, Reports and Dashboards, Salesforce DX, and Workbench.
+- Testing: wrote and validated Apex tests for controller changes; validated trigger behavior through record operations that fired existing triggers. Do not claim ownership of trigger or asynchronous-job test suites unless further evidence is supplied.
+- Delivery: integrated SonarQube analysis into an existing GitHub Actions pull-request pipeline. Apex tests ran in the pipeline, while the scratch-org deployment workflow already existed and was not candidate-authored.
+- Integration and systems context: REST/SOAP APIs, asynchronous processing, RabbitMQ, PostgreSQL, Python, TypeScript, JavaScript, SQL, cloud delivery, and access and permissions management.
+
+### Tailoring Angles
+
+- **Salesforce / CRM roles:** Lead with Apex/LWC, CRM data integrity, Big Objects, Queueable/Batchable processing, Salesforce sharing logic, Workspace API, agent workflows, dashboard alerts, and enterprise delivery.
+- **Salesforce platform / integration roles:** Lead with REST/SOAP APIs, data migration and deduplication, access management, reporting, external-system integration, and JavaScript/Python backend context.
+- **Customer-service / operations roles:** Lead with FedEx shipment workflows, secure document delivery, agent navigation, issue-resolution impact, and Farmers policy-level alert workflows.
+
+### Truth Boundaries And Missing Evidence
+
+- Do not claim Salesforce certification dates, certification IDs, Salesforce platform scale, workflow execution volume, Apex-test coverage, or production availability unless additional evidence is supplied.
+- Do not claim ownership of the entire Farmers Insurance or FedEx Salesforce implementation.
+- Do not combine the 43% storage reduction, 21% redundancy reduction, 1M+ account-record scope, and 30K+ user scope into a single metric or causal claim.
+- Do not claim ownership of the FedEx Apex wrapper/API integration layer, the existing scratch-org deployment workflow, the GitHub Actions Apex-test job, or trigger/async test suites.
+
 ## Augesys - Microsoft Entra Compliance-as-a-Service Platform
 
 - **Role:** Software Development Engineer
