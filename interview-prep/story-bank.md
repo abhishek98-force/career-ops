@@ -132,6 +132,26 @@ These stories contain only candidate-confirmed facts. Results marked qualitative
 - **Reflection:** Not yet provided by the candidate.
 - **Metrics:** No availability, latency, throughput, cloud-cost, database-volume, or user-impact metric has been provided.
 
+## Sedai Labs: Recovering Azure Pricing From Page-Level Throttling
+
+- **Themes:** Reliability, retries, external APIs, root-cause analysis, data pipelines
+- **Situation:** Azure Retail Prices ingestion encountered repeated `429 Too Many Requests` and transient server failures. Retrying the complete multi-region scrape repeatedly downloaded pages that had already succeeded and increased API load.
+- **Task:** Recover from transient failures at the smallest safe unit while preserving completed work and preventing Kubernetes from restarting the entire scrape.
+- **Action:** Added page-level retries for `429` and transient `5xx` responses, honored bounded numeric `Retry-After` values, used bounded exponential fallback delays, resumed the exact failed pagination URL, and set the production Azure pricing Job's Kubernetes retry limit to zero after scraper-level retries were exhausted. Added tests for throttling recovery, server failures, exhaustion, exact-page resumption, and non-retryable client errors.
+- **Result:** Preserved completed pages and regions during transient failures and prevented full-scrape retries from amplifying Azure API load.
+- **Reflection:** The retry boundary should match the smallest independently recoverable operation; infrastructure retries should not duplicate application-level recovery.
+- **Metrics:** No production failure-rate or recovery-time reduction is confirmed.
+
+## Sedai Labs: Securing Multi-Cloud Scraper Authentication
+
+- **Themes:** Cloud identity, least privilege, Kubernetes, secrets, AWS, Azure, GCP
+- **Situation:** Production AWS, Azure, and GCP scrapers required different authentication mechanisms without committing credentials or giving every workload access to every secret.
+- **Task:** Create provider-specific workload identities and deliver only the credentials required by each scraper.
+- **Action:** Configured dedicated Kubernetes service accounts; implemented Azure workload identity federation with projected short-lived tokens instead of a client secret; configured GCP Workload Identity and Secret Manager delivery for the pricing API key; delivered AWS credentials through Google Secret Manager and External Secrets; scoped access to individual secrets; and removed the temporary GitHub credential-seeding permission after migration.
+- **Result:** Established provider-specific production authentication with bounded credential exposure and no cloud credential values committed to Git or Terraform state.
+- **Reflection:** Identity boundaries should follow workload boundaries, and temporary migration privileges should be removed as soon as their one-time purpose is complete.
+- **Metrics:** No incident reduction, audit outcome, or credential-rotation metric is confirmed.
+
 ## VisionAnnotator: Unifying Automatic And Manual Annotations
 
 - **Themes:** Full-stack design, data contracts, interactive tooling, computer vision integration

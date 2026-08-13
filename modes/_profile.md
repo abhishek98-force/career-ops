@@ -30,6 +30,8 @@ Use the headline and confirmed facts in `config/profile.yml`. Do not manufacture
 
 The candidate's chosen primary differentiator is **end-to-end cloud delivery**. Frame the candidate as an engineer who can connect backend implementation, cloud infrastructure, CI/CD, Kubernetes, deployment validation, policy engines, and user-facing operational interfaces. Use only details present in approved user-layer sources.
 
+The candidate also confirms daily use of AI coding agents across planning, implementation, testing, code review, and refactoring. For AI-native software roles, pair this workflow with source-grounded evidence of specification-driven architecture, test validation, debugging, and ownership of final code quality. Do not name a specific coding-agent product unless the candidate confirms using that product directly.
+
 ## Sedai Labs Tailoring
 
 - For backend and data roles, prioritize Azure Retail Prices ingestion, Linux/Windows meter isolation, deterministic effective-date selection, invalid-data rejection, normalized observations, SQLModel writers, PostgreSQL/TimescaleDB, and Alembic migrations.

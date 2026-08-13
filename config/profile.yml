@@ -33,6 +33,7 @@ narrative:
     - "End-to-end cloud delivery from backend implementation through infrastructure, CI/CD, Kubernetes, and deployment validation"
     - "Cloud-native backend systems and APIs"
     - "Asynchronous data and document-processing pipelines"
+    - "Daily use of AI coding agents across planning, implementation, testing, code review, and refactoring"
   proof_points:
     - name: "Boston Liquor License Tracker"
       url: "https://github.com/codeforboston/boston-liquor-license-tracker/pulls?q=is%3Apr+is%3Aclosed+author%3Aabhishek98-force"
