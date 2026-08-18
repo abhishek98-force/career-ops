@@ -58,8 +58,21 @@ latex:
 ```
 
 7. Run: `node patch-latex-content.mjs <source.tex> /tmp/cv-patches-{company}.json output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex`. Use `{ "id": "...", "remove": true }` to remove a lower-priority macro call cleanly (including its otherwise-empty source line). The patcher re-extracts slots from the source; when the JSON also carries `slots`, it rejects stale or mismatched manifests instead of applying unsafe offsets.
-8. Run: `node generate-latex.mjs output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --compile-only`
+8. Run: `node generate-latex.mjs output/cv-{candidate}-{company}-{YYYY-MM-DD}.tex output/cv-{candidate}-{company}-{YYYY-MM-DD}.pdf --compile-only`. If `config/profile.yml` sets `cv.page_target`, pass `--max-pages={page_target}`; when the target is a hard requirement, also pass `--strict-pages`. A user may additionally require physical bottom-fill bounds with `--min-bottom-gap-in=N --max-bottom-gap-in=N --strict-fit`. These flags validate the rendered PDF only and never change typography, margins, spacing, or structure.
 9. Report: family, slot count, patched count, `.tex` path, `.pdf` path (or compile error)
+
+### Fixed-layout one-page fitting
+
+When the profile or custom instructions require one page, satisfy it through content selection only:
+
+1. Rank source-backed bullets by JD relevance and evidence strength before patching.
+2. Preserve all headings and entries required by `_custom.md`.
+3. Compile and inspect the `fit` object returned by `generate-latex.mjs`.
+4. On page overflow, remove the lowest-ranked removable bullet one at a time and recompile.
+5. On excessive bottom whitespace, try omitted bullets from highest to lowest relevance and retain the strongest combination that passes both page and gap bounds.
+6. Never insert filler or alter the source/generated layout to pass. If no valid content combination exists, stop with the fit diagnostics and ask the user which content boundary to relax.
+
+Strict bottom-fill measurement requires `pdfinfo` and `pdftotext`. If either is unavailable, strict fit fails rather than silently accepting an unmeasured PDF.
 
 **Requires:** `tectonic` or `pdflatex` on PATH (same as `latex` mode).
 

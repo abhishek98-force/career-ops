@@ -74,7 +74,7 @@ spend_tier: standard
 
 cv:
   output_format: "latex"
-  page_target: 2
+  page_target: 1
 
 latex:
   source: "data/templates/Abhishek_Resume_LLM_Flexible_Template_v8.tex"

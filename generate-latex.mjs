@@ -6,6 +6,8 @@
  * Usage:
  *   node generate-latex.mjs <input.tex> [output.pdf]
  *   node generate-latex.mjs <input.tex> [output.pdf] --compile-only
+ *   node generate-latex.mjs <input.tex> [output.pdf] --max-pages=1 --strict-pages \
+ *     --min-bottom-gap-in=0.35 --max-bottom-gap-in=0.70 --strict-fit
  *
  * Default: validates career-ops template structure (from templates/cv-template.tex).
  * --compile-only: skip template validation; compile any user-owned .tex (latex-tex mode).
@@ -28,6 +30,109 @@ const REQUIRED_COMMANDS = [
 ];
 
 const CJK_RE = /[぀-ヿ㐀-鿿豈-﫿ｦ-ﾟ가-힯ᄀ-ᇿ]/;
+const POINTS_PER_INCH = 72;
+
+/**
+ * Parse page count from pdfinfo output.
+ *
+ * @param {string} text
+ * @returns {number}
+ */
+export function parsePdfInfoPageCount(text) {
+  const match = String(text || '').match(/^Pages:\s+(\d+)\s*$/m);
+  const pages = match ? Number(match[1]) : 0;
+  if (!Number.isInteger(pages) || pages < 1) {
+    throw new Error('Could not determine PDF page count from pdfinfo output.');
+  }
+  return pages;
+}
+
+/**
+ * Parse page dimensions and the final rendered word position from
+ * `pdftotext -bbox` XHTML.
+ *
+ * @param {string} xml
+ * @returns {{pageCount: number, pages: Array<{heightPoints: number, lastTextYPoints: number, bottomGapPoints: number}>}}
+ */
+export function parsePdftotextBbox(xml) {
+  const pages = [];
+  const pageRe = /<page\b([^>]*)>([\s\S]*?)<\/page>/g;
+  for (const pageMatch of String(xml || '').matchAll(pageRe)) {
+    const heightMatch = pageMatch[1].match(/\bheight="([0-9]+(?:\.[0-9]+)?)"/);
+    const heightPoints = heightMatch ? Number(heightMatch[1]) : NaN;
+    const yValues = [...pageMatch[2].matchAll(/<word\b[^>]*\byMax="([0-9]+(?:\.[0-9]+)?)"[^>]*>/g)]
+      .map((match) => Number(match[1]))
+      .filter(Number.isFinite);
+    if (!Number.isFinite(heightPoints) || heightPoints <= 0 || yValues.length === 0) {
+      throw new Error('Could not determine rendered text bounds from pdftotext bbox output.');
+    }
+    const lastTextYPoints = Math.max(...yValues);
+    pages.push({
+      heightPoints,
+      lastTextYPoints,
+      bottomGapPoints: heightPoints - lastTextYPoints,
+    });
+  }
+  if (pages.length === 0) {
+    throw new Error('Could not find any rendered PDF pages in pdftotext bbox output.');
+  }
+  return { pageCount: pages.length, pages };
+}
+
+/**
+ * Measure rendered PDF pages and physical whitespace below the final word.
+ *
+ * @param {string} pdfPath
+ * @returns {{pageCount: number, pages: Array, bottomGapPoints: number, bottomGapInches: number}}
+ */
+export function measureLatexPdfFit(pdfPath) {
+  let info;
+  let bbox;
+  try {
+    info = execFileSync('pdfinfo', [pdfPath], { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
+    bbox = execFileSync('pdftotext', ['-bbox', pdfPath, '-'], { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'pipe'] });
+  } catch (err) {
+    throw new Error(`PDF fit measurement requires pdfinfo and pdftotext: ${err.message}`);
+  }
+  const pageCount = parsePdfInfoPageCount(info);
+  const bounds = parsePdftotextBbox(bbox);
+  if (bounds.pageCount !== pageCount) {
+    throw new Error(`PDF measurement disagreement: pdfinfo reports ${pageCount} pages, bbox reports ${bounds.pageCount}.`);
+  }
+  const bottomGapPoints = bounds.pages.at(-1).bottomGapPoints;
+  return {
+    pageCount,
+    pages: bounds.pages,
+    bottomGapPoints,
+    bottomGapInches: bottomGapPoints / POINTS_PER_INCH,
+  };
+}
+
+/**
+ * Evaluate a rendered PDF against page and bottom-whitespace constraints.
+ * This is a decision gate only; it never mutates or re-renders the document.
+ *
+ * @param {{pageCount: number, bottomGapPoints: number}} metrics
+ * @param {{maxPages?: number|null, minBottomGapPoints?: number|null, maxBottomGapPoints?: number|null}} options
+ * @returns {{valid: boolean, issues: string[]}}
+ */
+export function evaluateLatexFit(metrics, {
+  maxPages = null,
+  minBottomGapPoints = null,
+  maxBottomGapPoints = null,
+} = {}) {
+  const issues = [];
+  if (maxPages !== null && metrics.pageCount > maxPages) {
+    issues.push(`CV is ${metrics.pageCount} pages; the allowed maximum is ${maxPages}.`);
+  }
+  if (metrics.pageCount === 1 && minBottomGapPoints !== null && metrics.bottomGapPoints < minBottomGapPoints) {
+    issues.push(`Bottom gap is ${(metrics.bottomGapPoints / POINTS_PER_INCH).toFixed(2)}in; minimum is ${(minBottomGapPoints / POINTS_PER_INCH).toFixed(2)}in.`);
+  }
+  if (metrics.pageCount === 1 && maxBottomGapPoints !== null && metrics.bottomGapPoints > maxBottomGapPoints) {
+    issues.push(`Bottom gap is ${(metrics.bottomGapPoints / POINTS_PER_INCH).toFixed(2)}in; maximum is ${(maxBottomGapPoints / POINTS_PER_INCH).toFixed(2)}in.`);
+  }
+  return { valid: issues.length === 0, issues };
+}
 
 /**
  * @param {string} content
@@ -102,7 +207,7 @@ export function validateLatexContent(content, compileOnly) {
  * @param {boolean} compileOnly
  * @returns {Promise<object>}
  */
-export async function compileLatexFile(absPath, content, outputPath, compileOnly) {
+export async function compileLatexFile(absPath, content, outputPath, compileOnly, fitOptions = {}) {
   const { issues, counts } = validateLatexContent(content, compileOnly);
   const fileInfo = await stat(absPath);
   const sizeKB = (fileInfo.size / 1024).toFixed(1);
@@ -207,6 +312,34 @@ export async function compileLatexFile(absPath, content, outputPath, compileOnly
         path: targetPdf,
         sizeKB: parseFloat((pdfStat.size / 1024).toFixed(1)),
       };
+
+      const fitRequested = fitOptions.maxPages != null ||
+        fitOptions.minBottomGapPoints != null ||
+        fitOptions.maxBottomGapPoints != null;
+      if (fitRequested) {
+        try {
+          const metrics = measureLatexPdfFit(targetPdf);
+          const decision = evaluateLatexFit(metrics, fitOptions);
+          report.fit = {
+            ...metrics,
+            maxPages: fitOptions.maxPages,
+            minBottomGapPoints: fitOptions.minBottomGapPoints,
+            maxBottomGapPoints: fitOptions.maxBottomGapPoints,
+            valid: decision.valid,
+            issues: decision.issues,
+          };
+          const pageFailure = fitOptions.strictPages &&
+            fitOptions.maxPages !== null && metrics.pageCount > fitOptions.maxPages;
+          const gapFailure = fitOptions.strictFit && metrics.pageCount === 1 && (
+            (fitOptions.minBottomGapPoints !== null && metrics.bottomGapPoints < fitOptions.minBottomGapPoints) ||
+            (fitOptions.maxBottomGapPoints !== null && metrics.bottomGapPoints > fitOptions.maxBottomGapPoints)
+          );
+          report.strictFitFailure = pageFailure || gapFailure;
+        } catch (err) {
+          report.fit = { valid: false, issues: [err.message] };
+          report.strictFitFailure = Boolean(fitOptions.strictPages || fitOptions.strictFit);
+        }
+      }
     } catch (err) {
       report.postCompileError = `Failed to finalize PDF: ${err.message}`;
     }
@@ -226,12 +359,53 @@ export async function compileLatexFile(absPath, content, outputPath, compileOnly
 async function main() {
   const rawArgs = process.argv.slice(2);
   const compileOnly = rawArgs.includes('--compile-only');
-  const args = rawArgs.filter(a => a !== '--compile-only');
+  const strictPages = rawArgs.includes('--strict-pages');
+  const strictFit = rawArgs.includes('--strict-fit');
+  const readFlag = (name) => {
+    const prefix = `--${name}=`;
+    const arg = rawArgs.find(value => value.startsWith(prefix));
+    return arg ? arg.slice(prefix.length) : null;
+  };
+  const parsePositive = (name, raw, { integer = false } = {}) => {
+    if (raw === null) return null;
+    const value = Number(raw);
+    if (!Number.isFinite(value) || value <= 0 || (integer && !Number.isInteger(value))) {
+      throw new Error(`Invalid --${name} "${raw}". Use a positive ${integer ? 'integer' : 'number'}.`);
+    }
+    return value;
+  };
+  let maxPages;
+  let minBottomGapInches;
+  let maxBottomGapInches;
+  try {
+    maxPages = parsePositive('max-pages', readFlag('max-pages'), { integer: true });
+    minBottomGapInches = parsePositive('min-bottom-gap-in', readFlag('min-bottom-gap-in'));
+    maxBottomGapInches = parsePositive('max-bottom-gap-in', readFlag('max-bottom-gap-in'));
+    if (minBottomGapInches !== null && maxBottomGapInches !== null && minBottomGapInches > maxBottomGapInches) {
+      throw new Error('--min-bottom-gap-in cannot exceed --max-bottom-gap-in.');
+    }
+    if (strictPages && maxPages === null) {
+      throw new Error('--strict-pages requires --max-pages=N.');
+    }
+    if (strictFit && minBottomGapInches === null && maxBottomGapInches === null) {
+      throw new Error('--strict-fit requires --min-bottom-gap-in=N or --max-bottom-gap-in=N.');
+    }
+  } catch (err) {
+    console.error(err.message);
+    process.exit(1);
+  }
+  const args = rawArgs.filter(a =>
+    a !== '--compile-only' &&
+    a !== '--strict-pages' &&
+    a !== '--strict-fit' &&
+    !a.startsWith('--max-pages=') &&
+    !a.startsWith('--min-bottom-gap-in=') &&
+    !a.startsWith('--max-bottom-gap-in='));
   const inputPath = args[0];
   const outputPath = args[1];
 
   if (!inputPath) {
-    console.error('Usage: node generate-latex.mjs <input.tex> [output.pdf] [--compile-only]');
+    console.error('Usage: node generate-latex.mjs <input.tex> [output.pdf] [--compile-only] [--max-pages=N] [--strict-pages] [--min-bottom-gap-in=N] [--max-bottom-gap-in=N] [--strict-fit]');
     process.exit(1);
   }
 
@@ -244,9 +418,15 @@ async function main() {
     process.exit(1);
   }
 
-  const report = await compileLatexFile(absPath, content, outputPath || null, compileOnly);
+  const report = await compileLatexFile(absPath, content, outputPath || null, compileOnly, {
+    maxPages,
+    minBottomGapPoints: minBottomGapInches === null ? null : minBottomGapInches * POINTS_PER_INCH,
+    maxBottomGapPoints: maxBottomGapInches === null ? null : maxBottomGapInches * POINTS_PER_INCH,
+    strictPages,
+    strictFit,
+  });
   console.log(JSON.stringify(report, null, 2));
-  process.exit(report.compiled ? 0 : (report.valid ? 1 : 1));
+  process.exit(report.compiled && !report.strictFitFailure ? 0 : 1);
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
