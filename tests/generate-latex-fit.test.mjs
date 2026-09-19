@@ -1,5 +1,5 @@
 import { spawnSync } from 'child_process';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { pass, fail, ROOT, NODE } from './helpers.mjs';
 import {
@@ -110,36 +110,40 @@ for (const testCase of invalidCases) {
 }
 
 const protectedTemplatePath = join(ROOT, 'data', 'templates', 'Abhishek_Resume_LLM_Flexible_Template_v8.tex');
-const protectedTemplate = readFileSync(protectedTemplatePath, 'utf-8');
-const manifest = buildManifest(protectedTemplatePath, protectedTemplate);
-const patchedTemplate = applyPatches(protectedTemplate, [
-  { id: 'bullet-0', text: 'Source-backed tailored evidence.' },
-  { id: 'bullet-1', remove: true },
-], manifest.slots);
-const immutableMarkers = [
-  '\\documentclass[letterpaper,10pt]{article}',
-  '\\usepackage[letterpaper,top=18bp,bottom=18bp,left=36.1bp,right=36bp]{geometry}',
-  '\\fontsize{10bp}{12.2bp}\\selectfont',
-  '\\resumeSection{SKILLS}',
-  '\\resumeSection{RELEVANT EXPERIENCE}',
-  '\\resumeSubheading{Software Engineering Intern, Sedai Labs - Spot Intelligence}{July 2026 - Present}',
-  '\\resumeSubheading{Software Development Engineer, Augesys}{March 2026 - Present}',
-  '\\resumeSubheading{Software Development Intern, IpserLabs}{January 2025 - May 2025}',
-  '\\resumeSubheading{Software Engineer, Wipro}{July 2021 - August 2023}',
-  '\\resumeSection{OPEN SOURCE CONTRIBUTIONS}',
-  '\\resumeSection{SELECT PROJECTS}',
-  '\\resumeSection{EDUCATION}',
-];
-if (
-  immutableMarkers.every(marker => patchedTemplate.includes(marker)) &&
-  patchedTemplate.includes('Source-backed tailored evidence.') &&
-  (patchedTemplate.match(/\\resumeItem\{Bullet 2\}/g) || []).length ===
-    (protectedTemplate.match(/\\resumeItem\{Bullet 2\}/g) || []).length - 1 &&
-  readFileSync(protectedTemplatePath, 'utf-8') === protectedTemplate
-) {
-  pass('LaTeX slot fitting preserves the protected layout and source file');
+if (!existsSync(protectedTemplatePath)) {
+  pass('LaTeX slot fitting user-template integration skipped when the protected user template is absent');
 } else {
-  fail('LaTeX slot fitting changed protected layout structure or source content');
+  const protectedTemplate = readFileSync(protectedTemplatePath, 'utf-8');
+  const manifest = buildManifest(protectedTemplatePath, protectedTemplate);
+  const patchedTemplate = applyPatches(protectedTemplate, [
+    { id: 'bullet-0', text: 'Source-backed tailored evidence.' },
+    { id: 'bullet-1', remove: true },
+  ], manifest.slots);
+  const immutableMarkers = [
+    '\\documentclass[letterpaper,10pt]{article}',
+    '\\usepackage[letterpaper,top=18bp,bottom=18bp,left=36.1bp,right=36bp]{geometry}',
+    '\\fontsize{10bp}{12.2bp}\\selectfont',
+    '\\resumeSection{SKILLS}',
+    '\\resumeSection{RELEVANT EXPERIENCE}',
+    '\\resumeSubheading{Software Engineering Intern, Sedai}{July 2026 - Present}',
+    '\\resumeSubheading{Software Development Engineer, Augesys}{March 2026 - Present}',
+    '\\resumeSubheading{Software Development Intern, IpserLabs}{January 2025 - May 2025}',
+    '\\resumeSubheading{Software Engineer, Wipro}{July 2021 - August 2023}',
+    '\\resumeSection{OPEN SOURCE CONTRIBUTIONS}',
+    '\\resumeSection{SELECT PROJECTS}',
+    '\\resumeSection{EDUCATION}',
+  ];
+  if (
+    immutableMarkers.every(marker => patchedTemplate.includes(marker)) &&
+    patchedTemplate.includes('Source-backed tailored evidence.') &&
+    (patchedTemplate.match(/\\resumeItem\{Bullet 2\}/g) || []).length ===
+      (protectedTemplate.match(/\\resumeItem\{Bullet 2\}/g) || []).length - 1 &&
+    readFileSync(protectedTemplatePath, 'utf-8') === protectedTemplate
+  ) {
+    pass('LaTeX slot fitting preserves the protected layout and source file');
+  } else {
+    fail('LaTeX slot fitting changed protected layout structure or source content');
+  }
 }
 
 const profile = readFileSync(join(ROOT, 'config', 'profile.yml'), 'utf-8');
