@@ -127,32 +127,34 @@ Abhishek Gopalakrishnan Unnithan\par}
 \resumeSubheading{Software Engineering Intern, Sedai}{July 2026 - Present}
 \resumeItemListStart
   \resumeItem{Built Azure Retail Prices REST API ingestion that normalized regional Spot and on-demand records, isolated Linux and Windows meters, rejected invalid prices, and recovered throttled pages through bounded retries.}
-  \resumeItem{Extended SQLModel and PostgreSQL/TimescaleDB persistence with Alembic migrations and catalog placeholders for later metadata enrichment.}
-  \resumeItem{Added fixture-backed pytest coverage and GitHub Actions validation for Python, Ruff, and TypeScript across a shared monorepo.}
-  \resumeItem{Built a GitOps delivery path for an existing Java/Spring Boot pricing service: Maven tests, Docker, ECR images, Helm, Argo CD, and EKS validation.}
-  \resumeItem{Deployed and validated five Dockerized API, UI, and scraper services on GKE with Terraform, Kustomize, and persistent TimescaleDB.}
+  \resumeItem{Extended SQLModel/PostgreSQL writers with Alembic migrations, preserving Azure prices before full catalog metadata was available and reconciling placeholders after enrichment without changing AWS/GCP writer behavior.}
+  \resumeItem{Added pytest fixtures and GitHub Actions checks for Python, Ruff, and TypeScript.}
+  \resumeItem{Built the GitOps delivery path for an existing Java/Spring Boot pricing service: Docker and Maven tests, ECR images, cross-repository Helm updates, Argo CD, and validated EKS deployment.}
+  \resumeItem{Deployed five Dockerized API, UI, and scraper services on GKE with Terraform, Kustomize, TimescaleDB persistence, Workload Identity, multi-cloud credentials, and scheduled workloads.}
 \resumeItemListEnd
 
 \resumeSubheading{Software Development Engineer, Augesys}{March 2026 - Present}
 \resumeItemListStart
-  \resumeItem{Built a full-stack Microsoft Entra validation workflow with FastAPI, React, Microsoft Graph, OPA/Rego, and explainable policy results.}
-  \resumeItem{Designed a manifest-driven DAG engine for API collection, transformations, normalized artifacts, and downstream policy evaluation.}
-  \resumeItem{Built reusable Graph clients and fan-out collection handlers with structured error handling for missing tokens and external-service failures.}
+  \resumeItem{Built a FastAPI/React Microsoft Entra validation workflow that collects Graph data, runs OPA/Rego checks, and presents persisted, explainable policy results with NIST 800-171 control views.}
+  \resumeItem{Designed a YAML manifest-driven workflow engine that models tenant-data collection as a DAG of source, transform, and final-object steps, making the pattern reusable for future Microsoft 365 product pipelines.}
+  \resumeItem{Built reusable Graph clients and fan-out collection handlers with structured error handling for expired tokens, external-call failures, invalid responses, and missing persisted results.}
   \resumeItem{Developed React/Vite views for progress polling, persisted results, and policy-level explanations.}
   \resumeItem{Implemented server-side OAuth/OIDC with MSAL, tenant allowlisting, cached token acquisition, and token-expiry checks.}
 \resumeItemListEnd
 
 \resumeSubheading{Software Development Intern, IpserLabs}{January 2025 - May 2025}
 \resumeItemListStart
-  \resumeItem{Led an asynchronous Python, RabbitMQ, and S3 document-processing pipeline that decoupled OCR and LLM extraction for a web app.}
+  \resumeItem{Led an asynchronous Python/RabbitMQ/S3 document-processing pipeline that decoupled OCR and LLM extraction, generated validated outputs, and stored results in SQLite for a web application.}
   \resumeItem{Reduced ingestion failures by 23\% with AJV validation and strict JSON Schema contracts for extracted output.}
+  \resumeItem{Initialized a modular React codebase with Tailwind and MUI for the document-processing web app.}
 \resumeItemListEnd
 
 \resumeSubheading{Software Engineer, Wipro}{July 2021 - August 2023}
 \resumeItemListStart
-  \resumeItem{Reduced FedEx issue-resolution time by 38\% by designing 10+ HTML5/CSS3 shipment-tracking components for support agents.}
-  \resumeItem{Built a shipping-document workflow with browser PDF previews and automated email delivery; contributed through Agile/Scrum and CI checks.}
+  \resumeItem{Cut FedEx issue-resolution time 38\% with 10+ HTML5/CSS3 cargo-tracking components.}
+  \resumeItem{Built FedEx's shipping-document workflow with browser PDF previews and automated email delivery; improved release quality through Agile/Scrum, debugging, CI checks, and automated tests.}
   \resumeItem{Improved Farmers Insurance CRM data integration, reducing redundancy by 21\% across more than 1M customer records.}
+  \resumeItem{Expanded Farmers Insurance alert workflows for 30K+ users with counters, contextual alerts, and search.}
 \resumeItemListEnd
 \resumeSubHeadingListEnd
 
@@ -168,7 +170,7 @@ Abhishek Gopalakrishnan Unnithan\par}
 \Needspace{11\baselineskip}
 \resumeSection{SELECT PROJECTS}
 \resumeItemListStart
-  \resumeProject{Visual Objects}{Built a React/TypeScript and Flask web app with PostgreSQL/SQLAlchemy persistence for editable image annotations and exports; integrated automatic detections with user correction and deployed the web application with Docker, Nginx, and GitHub Actions.}
+  \resumeProject{Visual Objects}{Built a React/TypeScript and Flask web app with PostgreSQL/SQLAlchemy persistence for editable image annotations and exports; integrated automatic detections with user correction and deployed the web application with Docker, Nginx, Gunicorn, database migrations, and GitHub Actions.}
 \resumeItemListEnd
 
 % ---------- Education ----------

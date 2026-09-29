@@ -59,6 +59,7 @@
 - Use the protected Calibri-compatible LaTeX layout as the default PDF design.
 - Choose employment bullet counts by evidence and JD relevance, not a fixed default. Keep an additional distinct bullet only when it materially strengthens the application and the resume still passes the strict one-page balanced-fill gate. Never pad a role, invent evidence, remove an entry, or alter fonts, margins, spacing, macros, or section structure to force one page.
 - Produce `.tex` and PDF resume files for each application. Do not generate a DOCX companion.
+- Before finalizing any tailored resume, inspect the rendered PDF. If the last line of a bullet or paragraph occupies less than half the available text width, revise the wording to improve the wrap and render it again. Keep every claim source-backed; do not add filler or change the protected layout just to fill a line.
 
 ## Off-Limits
 
