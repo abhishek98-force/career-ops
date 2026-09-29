@@ -1,0 +1,33 @@
+{
+  "patches": [
+    { "id": "skill-0", "label": "Languages", "text": "Python, Java, TypeScript, JavaScript, SQL, HTML5, CSS3" },
+    { "id": "skill-1", "label": "Backend and APIs", "text": "FastAPI, Flask, Spring Boot delivery, REST APIs, microservices, SQLAlchemy, SQLModel" },
+    { "id": "skill-2", "label": "Frontend", "text": "React, Vite, Konva, Lightning Web Components" },
+    { "id": "skill-3", "label": "Data and Testing", "text": "PostgreSQL, TimescaleDB, Alembic, pytest, JSON Schema, AJV, RabbitMQ" },
+    { "id": "skill-4", "label": "Cloud and Delivery", "text": "Docker, AWS, Azure, GCP, Kubernetes, Terraform, GitHub Actions, CI/CD" },
+    { "id": "bullet-0", "text": "Built Azure Retail Prices REST API ingestion that normalized regional Spot and on-demand records, isolated Linux and Windows meters, rejected invalid prices, and recovered throttled pages through bounded retries." },
+    { "id": "bullet-1", "text": "Extended SQLModel and PostgreSQL/TimescaleDB persistence with Alembic migrations and catalog placeholders for later metadata enrichment." },
+    { "id": "bullet-2", "text": "Added fixture-backed pytest coverage and GitHub Actions validation for Python, Ruff, and TypeScript across a shared monorepo." },
+    { "id": "bullet-3", "text": "Built a GitOps delivery path for an existing Java/Spring Boot pricing service: Maven tests, Docker, ECR images, Helm, Argo CD, and EKS validation." },
+    { "id": "bullet-4", "text": "Deployed and validated five Dockerized API, UI, and scraper services on GKE with Terraform, Kustomize, and persistent TimescaleDB." },
+    { "id": "bullet-5", "remove": true },
+    { "id": "bullet-6", "text": "Built a full-stack Microsoft Entra validation workflow with FastAPI, React, Microsoft Graph, OPA/Rego, and explainable policy results." },
+    { "id": "bullet-7", "text": "Designed a manifest-driven DAG engine for API collection, transformations, normalized artifacts, and downstream policy evaluation." },
+    { "id": "bullet-8", "text": "Built reusable Graph clients and fan-out collection handlers with structured error handling for missing tokens and external-service failures." },
+    { "id": "bullet-9", "text": "Developed React/Vite views for progress polling, persisted results, and policy-level explanations." },
+    { "id": "bullet-10", "text": "Implemented server-side OAuth/OIDC with MSAL, tenant allowlisting, cached token acquisition, and token-expiry checks." },
+    { "id": "bullet-11", "remove": true },
+    { "id": "bullet-12", "remove": true },
+    { "id": "bullet-13", "text": "Led an asynchronous Python, RabbitMQ, and S3 document-processing pipeline that decoupled OCR and LLM extraction for a web app." },
+    { "id": "bullet-14", "text": "Reduced ingestion failures by 23% with AJV validation and strict JSON Schema contracts for extracted output." },
+    { "id": "bullet-15", "remove": true },
+    { "id": "bullet-16", "remove": true },
+    { "id": "bullet-17", "text": "Reduced FedEx issue-resolution time by 38% by designing 10+ HTML5/CSS3 shipment-tracking components for support agents." },
+    { "id": "bullet-18", "text": "Built a shipping-document workflow with browser PDF previews and automated email delivery; contributed through Agile/Scrum and CI checks." },
+    { "id": "bullet-19", "text": "Improved Farmers Insurance CRM data integration, reducing redundancy by 21% across more than 1M customer records." },
+    { "id": "bullet-20", "remove": true },
+    { "id": "bullet-21", "text": "Reduced licensing-board update time from 15 minutes to 5 seconds by automating PDF discovery, applicant extraction, JSON updates, validation, and pull-request creation with GitHub Actions." },
+    { "id": "bullet-22", "remove": true },
+    { "id": "project-0", "text": "Built a React/TypeScript and Flask web app with PostgreSQL/SQLAlchemy persistence for editable image annotations and exports; integrated automatic detections with user correction and deployed the web application with Docker, Nginx, and GitHub Actions." }
+  ]
+}
