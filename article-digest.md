@@ -10,17 +10,22 @@ This file records source-grounded proof points that career-ops may use in applic
 - **Contribution record:** 73 directly authored non-merge commits and 23 merge commits attributed to the listed Git identities on the audited `main` branch through merged PR #156. Merge authorship records integration activity and does not establish sole authorship of every merged change.
 - **Git identities:** Abhishek `<gopalakrishnanunni.a@northeastern.edu>`, Abhishek Unnithan `<abhishek.unnithan@sedailabs.io>`, and Abhishek Unnithan `<gopalakrishnanunni.a@northeastern.edu>`. These addresses are for contribution attribution only and must not replace the candidate's contact email.
 
-### Java Pricing Service GitOps Delivery
+### Java Pricing Service Productionization And GitOps Delivery (Ongoing)
 
-- Created the first Kubernetes and GitOps delivery path for an existing Java/Spring Boot service that ingests Spot prices, on-demand prices, and instance details. The candidate did not develop the application itself.
+- Took an existing AWS EC2 pricing microservice (Java 25, Spring Boot, PostgreSQL) from local prototype to Amazon EKS, owning CI/CD, Kubernetes deployment, and observability. The confirmed deployment environment is integration. This is Sedai's ongoing Spot-pricing productionization effort; the contributions listed here are completed work within that effort. The candidate did not originally develop the application itself.
 - Built a multi-stage Dockerfile and a merge-to-main GitHub Actions workflow that ran Maven unit and integration tests before building the image.
+- Built GitHub Actions CI/CD to run PR tests, scan and publish multi-architecture Docker images to Amazon ECR, and update Helm image tags in a separate GitOps repository. Caching improvements reduced CI time by approximately 10%. The automated handoff ended at the GitOps repository update; deployment used manual Argo CD syncs.
 - Used GitHub Actions OIDC with an existing AWS IAM role to publish commit-SHA-tagged images to Amazon ECR; do not claim ownership of the IAM role or trust policy.
 - Automated the cross-repository GitOps handoff by using `yq` to update the image tag in Helm values and committing the change directly to the separate GitOps repository.
 - Authored the Helm chart from scratch, including the application Deployment, cluster-internal Service, PostgreSQL/TimescaleDB StatefulSet, AWS Secrets Manager integration through External Secrets, service account, Spring Boot Actuator health probes, Prometheus ServiceMonitor, and resource and scaling configuration.
-- Created the Argo CD Application with the repository and chart path, destination EKS cluster and namespace, environment values, and manual-sync policy.
+- DevOps set up Argo CD; the candidate manually synced it to deploy the service. Do not attribute Argo CD setup or Application creation to the candidate.
 - Validated releases through Argo CD health, Kubernetes rollout status, Spring Boot Actuator health checks, and a functional API check.
-- The candidate implemented the delivery path mostly independently with normal review. No production classification, deployment frequency, rollback automation, reliability improvement, or quantitative impact has been confirmed.
-- **Provenance:** user-stated 2026-09-24.
+- Tuned Kubernetes CPU and memory resources for stable performance, including increasing the JVM heap to 3× its default allocation.
+- Fixed pricing integration bugs. Keep this as supporting evidence within the broader productionization work; no API-call reduction percentage is established.
+- Built a one-command local kind test harness with Prometheus/Grafana monitoring to test Kubernetes deployments and inspect service metrics before shipping. This harness is a local testing setup.
+- Separately removed approximately 400 lines of deployment configuration; the specific cleanup context is not yet recorded. Do not attribute this reduction to the kind test harness.
+- The candidate implemented the delivery path mostly independently with normal review. EKS deployment to integration is candidate-confirmed; the broader productionization effort remains ongoing. Do not claim production-environment deployment or automated Argo CD synchronization. Deployment frequency, rollback automation, uptime, and customer impact remain unconfirmed.
+- **Provenance:** user-stated 2026-09-24; ongoing project status, CI/CD enhancements, approximate CI improvement, resource tuning, bug fixes, and local monitoring workflow updated from user statements on 2026-10-14. Subsequent clarification in the same conversation establishes integration deployment, DevOps-owned Argo CD setup, and candidate-operated manual syncs, superseding earlier production classification and Argo CD setup attribution.
 
 ### Azure Pricing Ingestion
 

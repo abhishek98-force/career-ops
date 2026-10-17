@@ -61,6 +61,7 @@ compensation:
 location:
   country: "United States"
   city: "San Jose"
+  state: "CA"
   timezone: "America/Los_Angeles"
   visa_status: "Temporary US work authorization; future employer sponsorship required"
   authorized_in:

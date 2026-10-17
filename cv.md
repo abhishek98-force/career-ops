@@ -12,7 +12,7 @@ Software engineer experienced in backend services, cloud infrastructure, asynchr
 
 - **Languages:** Python, TypeScript, JavaScript, Java, SQL, HTML5, CSS3
 - **Frameworks and systems:** Spring Boot, FastAPI, Flask, Gunicorn, Node.js, React, Vite, Konva, REST APIs, microservices, asynchronous processing, RabbitMQ, Axios, Cheerio, pytest, Ruff, uv
-- **Cloud and infrastructure:** AWS, Amazon ECR, Amazon EKS, AWS Secrets Manager, Azure, GCP, GKE, Artifact Registry, Workload Identity, Docker, Docker Compose, Kubernetes, Helm, Argo CD, External Secrets, Prometheus, kind, kubectl, Terraform, Kustomize, GitHub Actions, Nginx, Heroku, serverless, Linux
+- **Cloud and infrastructure:** AWS, Amazon ECR, Amazon EKS, AWS Secrets Manager, Azure, GCP, GKE, Artifact Registry, Workload Identity, Docker, Docker Compose, Kubernetes, Helm, Argo CD, External Secrets, Prometheus, Grafana, kind, kubectl, Terraform, Kustomize, GitHub Actions, Nginx, Heroku, serverless, Linux
 - **Data, security, and AI:** PostgreSQL, TimescaleDB, SQLAlchemy, SQLModel, Alembic, JSON Schema, AJV, PyMuPDF, Microsoft Graph, Microsoft Entra ID, MSAL, OAuth 2.0, OpenID Connect, OPA, Rego, NIST 800-171, CISA SCuBA, LLMs, multi-agent systems, YOLOv8, ONNX, Pillow, OCR, Salesforce
 
 ## Experience
@@ -25,7 +25,10 @@ July 2026 - Present
 - Extended SQLModel and PostgreSQL/TimescaleDB persistence with Alembic migrations and pricing-only catalog placeholders, preserving incomplete Azure prices for later hardware-metadata enrichment.
 - Integrated Azure eviction observations with canonical live-state and historical storage using case-insensitive SKU matching, multi-OS updates, and safeguards against phantom records or duplicate history.
 - Added fixture-backed pytest coverage and GitHub Actions validation for locked Python dependencies, Ruff, tests, and TypeScript across the shared monorepo.
-- Built the first GitOps deployment path for a Java/Spring Boot pricing service, using GitHub Actions and AWS OIDC to run Maven tests, publish commit-SHA-tagged images to Amazon ECR, and update Helm values in a separate repository; authored the Helm chart and Argo CD Application for deployment to Amazon EKS.
+- Deployed an AWS EC2 pricing microservice (Java 25, Spring Boot, PostgreSQL) from local prototype to Amazon EKS, owning CI/CD, Kubernetes deployment, and observability, and fixing pricing integration bugs.
+- Built GitHub Actions CI/CD to run PR tests, scan and publish multi-architecture Docker images to Amazon ECR, and update Helm image tags in a separate GitOps repository; deployed to Amazon EKS through manual Argo CD syncs and improved CI speed by approximately 10% through caching.
+- Authored the Helm chart for the application, PostgreSQL, secrets management, and AWS IAM access; tuned Kubernetes CPU and memory resources, including increasing the JVM heap to 3× its default allocation.
+- Built a one-command local kind test harness with Prometheus/Grafana monitoring to test Kubernetes deployments and inspect service metrics.
 - Deployed and validated five Dockerized API, UI, and cloud-scraper services on GKE using Terraform, Artifact Registry, Kustomize, persistent TimescaleDB storage, Workload Identity, multi-cloud credentials, and scheduled scraper workloads.
 
 ### Software Development Engineer (Part-time), Augesys
